@@ -1,0 +1,55 @@
+{
+  // 运行环境：本地或 Browserbase 云平台
+  "env": "LOCAL", // 或 "BROWSERBASE"
+
+  // 当 env 为 "BROWSERBASE" 时，以下 Browserbase 配置是必需的
+//   "apiKey": "YOUR_BROWSERBASE_API_KEY", // Browserbase API 密钥
+//   "projectId": "YOUR_BROWSERBASE_PROJECT_ID", // Browserbase 项目 ID
+//   "browserbaseSessionID": "OPTIONAL_SESSION_ID", // 可选：恢复现有 Browserbase 会话的 ID
+//   "browserbaseSessionCreateParams": {
+//     // 可选：创建新 Browserbase 会话的参数
+//     // 详细参数请参考 Browserbase 文档
+//   },
+
+  // 本地浏览器配置（仅当 env 为 "LOCAL" 时使用）
+  "localBrowserLaunchOptions": {
+    "headless": false, // 是否以无头模式运行浏览器，默认为 true
+    // "executablePath": "/path/to/chrome", // Chrome/Chromium 可执行文件路径
+    "args": ["--disable-gpu"], // 额外的 Chrome 启动参数
+    "userDataDir": "~/.stagehand/local_browser_data", // 浏览器用户数据目录路径
+    "viewport": {
+      "width": 1920, // 默认视口宽度
+      "height": 1080 // 默认视口高度
+    },
+    "devtools": false, // 是否自动打开 DevTools，默认为 false
+    // "proxy": {
+    //   "server": "http://proxy.example.com", // 代理服务器地址
+    //   "bypass": "localhost,127.0.0.1", // 代理绕过列表
+    //   "username": "proxyUser", // 代理用户名
+    //   "password": "proxyPass" // 代理密码
+    // },
+    "ignoreHTTPSErrors": false, // 是否忽略 HTTPS 证书错误，默认为 false
+    "cdpUrl": "ws://localhost:9222/devtools/browser" // 通过 CDP WebSocket URL 连接到现有 Chrome 实例
+  },
+
+  // AI/LLM 配置
+//   "model": {
+//     "name": "openai/gpt-4o", // 使用的 AI 模型名称
+//     "apiKey": "YOUR_OPENAI_API_KEY", // 模型提供商的 API 密钥（可选，优先级高于环境变量）
+//     "baseUrl": "https://api.openai.com/v1" // 自定义 API 端点基础 URL（可选）
+//   },
+//   "llmClient": null, // 自定义 LLM 客户端实现（可选）
+//   "systemPrompt": "You are a helpful assistant.", // 自定义系统提示，用于指导 AI 行为
+
+  // 行为选项
+  "selfHeal": true, // 是否启用自我修复模式，默认为 true
+  "experimental": false, // 是否启用实验性功能，默认为 false
+  "domSettleTimeout": 30000, // 等待 DOM 稳定的默认超时时间（毫秒），默认为 30000
+  "cacheDir": "~/.stagehand/cache", // 缓存目录路径，用于缓存操作观察结果以提高性能
+
+  // 日志选项
+//   "verbose": 1, // 日志详细程度：0（最少）、1（标准，默认）、2（详细调试）
+//   "logInferenceToFile": false, // 是否将 AI 推理详情记录到文件，默认为 false
+//   "disablePino": false, // 是否禁用 Pino 日志后端，默认为 false
+//   "logger": null // 自定义日志记录器函数（可选）
+}
