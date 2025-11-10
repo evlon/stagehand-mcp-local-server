@@ -9,6 +9,7 @@ export function createSessionManager(stagehandConfig) {
     const sessionId = context?.sessionId || 'default';
     let session = sessions.get(sessionId);
     if (!session) {
+      console.log(`Creating new Stagehand session for ID: ${sessionId}, with config:`, stagehandConfig);
       const sh = new Stagehand(stagehandConfig);
       await sh.init();
       session = { sh, activePageIndex: 0 };

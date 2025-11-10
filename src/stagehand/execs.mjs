@@ -38,9 +38,10 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       const got = await safeGetPage(session, pageIndex, { allowCreate: true });
       if (!got) throw new UserError('无法获取页面。');
       const { page, idx } = got;
-      await page.goto(url);
+      const sanitizedUrl = typeof url === 'string' ? url.replace(/`/g, '').trim() : String(url);
+      await page.goto(sanitizedUrl);
       session.activePageIndex = idx;
-      return JSON.stringify({ message: 'Navigated', url, pageIndex: idx });
+      return JSON.stringify({ message: 'Navigated', url: sanitizedUrl, pageIndex: idx });
     },
 
     stagehand_close_page: async (args, context) => {

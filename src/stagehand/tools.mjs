@@ -7,32 +7,32 @@ export function registerStagehandTools({ mcpServer, getSession, safeGetPage, gen
   const executors = createStagehandExecutors({ getSession, safeGetPage, generatePlaywrightScript, asset: { ensureAssetServer, ensureDirs, ASSET_PORT, SCREEN_DIR } });
 
   // 页面管理：创建新页面
-  mcpServer.addTool({
-    name: 'stagehand_new_page',
-    description: '创建一个新的浏览器页面，可选地立即导航到指定 URL。',
-    parameters: z.object({
-      url: z.string().url().optional().describe('可选：创建后导航到该 URL'),
-    }),
-    execute: executors.stagehand_new_page,
-  });
+  // mcpServer.addTool({
+  //   name: 'stagehand_new_page',
+  //   description: '创建一个新的浏览器页面，可选地立即导航到指定 URL。',
+  //   parameters: z.object({
+  //     url: z.string().url().optional().describe('可选：创建后导航到该 URL'),
+  //   }),
+  //   execute: executors.stagehand_new_page,
+  // });
 
   // 页面管理：列出页面
-  mcpServer.addTool({
-    name: 'stagehand_list_pages',
-    description: '列出当前会话的所有页面索引，包含活动页索引。',
-    parameters: z.object({}),
-    execute: executors.stagehand_list_pages,
-  });
+  // mcpServer.addTool({
+  //   name: 'stagehand_list_pages',
+  //   description: '列出当前会话的所有页面索引，包含活动页索引。',
+  //   parameters: z.object({}),
+  //   execute: executors.stagehand_list_pages,
+  // });
 
-  // 页面管理：设置活动页
-  mcpServer.addTool({
-    name: 'stagehand_set_active_page',
-    description: '设置当前会话的活动页面索引。',
-    parameters: z.object({
-      pageIndex: z.number().int().nonnegative().describe('要设为活动的页面索引'),
-    }),
-    execute: executors.stagehand_set_active_page,
-  });
+  // // 页面管理：设置活动页
+  // mcpServer.addTool({
+  //   name: 'stagehand_set_active_page',
+  //   description: '设置当前会话的活动页面索引。',
+  //   parameters: z.object({
+  //     pageIndex: z.number().int().nonnegative().describe('要设为活动的页面索引'),
+  //   }),
+  //   execute: executors.stagehand_set_active_page,
+  // });
 
   // 页面导航：goto
   mcpServer.addTool({
@@ -45,15 +45,15 @@ export function registerStagehandTools({ mcpServer, getSession, safeGetPage, gen
     execute: executors.stagehand_goto,
   });
 
-  // 页面管理：关闭页面
-  mcpServer.addTool({
-    name: 'stagehand_close_page',
-    description: '关闭指定或活动页面。',
-    parameters: z.object({
-      pageIndex: z.number().int().nonnegative().optional().describe('可选：要关闭的页面索引'),
-    }),
-    execute: executors.stagehand_close_page,
-  });
+  // // 页面管理：关闭页面
+  // mcpServer.addTool({
+  //   name: 'stagehand_close_page',
+  //   description: '关闭指定或活动页面。',
+  //   parameters: z.object({
+  //     pageIndex: z.number().int().nonnegative().optional().describe('可选：要关闭的页面索引'),
+  //   }),
+  //   execute: executors.stagehand_close_page,
+  // });
 
   // 截图：返回 URL 或 dataURL
   mcpServer.addTool({
