@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { UserError } from 'fastmcp';
-import { createStagehandExecutors } from './stagehandExecs.mjs';
+import { createStagehandExecutors } from './execs.mjs';
 
 export function registerStagehandTools({ mcpServer, getSession, safeGetPage, generatePlaywrightScript, asset }) {
   const { ensureAssetServer, ensureDirs, ASSET_PORT, SCREEN_DIR } = asset;

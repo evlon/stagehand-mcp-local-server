@@ -16,13 +16,19 @@
 ## 目录结构
 ```
 ├── public/
-│   └── screenshots/          # 截图存放目录（自动创建）
+│   └── screenshots/            # 截图存放目录（自动创建）
 ├── src/
-│   ├── config/config.mjs     # 读取 .env 并暴露基础配置
-│   ├── index.mjs             # 入口，启动 MCP 服务器
-│   └── servers/mcpServer.mjs # 工具注册与会话隔离逻辑
-├── stagehand.config.jsonc    # Stagehand 配置（支持注释）
-├── .env                      # 环境变量文件（可选）
+│   ├── config/config.mjs       # 读取 .env 并暴露基础配置
+│   ├── index.mjs               # 入口，启动 MCP 服务器
+│   ├── server/mcp.mjs          # MCP 服务启动与工具注册
+│   ├── stagehand/
+│   │   ├── helpers.mjs         # 会话管理与页面安全获取
+│   │   ├── execs.mjs           # Stagehand 工具 execute 实现
+│   │   ├── tools.mjs           # MCP 工具注册（调用 execs）
+│   │   └── playwright.mjs      # 从历史生成 Playwright 脚本
+│   └── assets/assetServer.mjs  # 静态资源服务封装（截图等）
+├── stagehand.config.jsonc      # Stagehand 配置（支持注释）
+├── .env                        # 环境变量文件（可选）
 ├── package.json
 └── README.md
 ```
@@ -43,7 +49,7 @@ MCP_PORT=3334 pnpm exec node src/index.mjs
 ## 配置
 本项目支持从 `stagehand.config.jsonc` 加载配置并兼容注释；也支持通过环境变量进行覆盖（优先级最高）。
 
-- 默认配置示例（摘自 `mcpServer.mjs`）：
+- 默认配置示例（摘自 `server/mcp.mjs`）：
   - `env: "LOCAL"`
   - `verbose: 2`
   - `model` 使用 `provider/model` 形式的标识（可通过环境变量覆盖）

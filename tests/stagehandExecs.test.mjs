@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createStagehandExecutors } from '../src/servers/stagehandExecs.mjs';
+import { createStagehandExecutors } from '../src/stagehand/execs.mjs';
 
 function createMockPage(pagesArr) {
   return {

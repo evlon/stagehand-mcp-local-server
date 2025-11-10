@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {createMcpServer} from './servers/mcpServer.mjs';
+import { createMcpServer } from './server/mcp.mjs';
 
 async function main() {
   await createMcpServer();
