@@ -14,7 +14,7 @@
   // 本地浏览器配置（仅当 env 为 "LOCAL" 时使用）
   "localBrowserLaunchOptions": {
     "headless": false, // 是否以无头模式运行浏览器，默认为 true
-    // "executablePath": "/path/to/chrome", // Chrome/Chromium 可执行文件路径
+    "executablePath": "/usr/bin/microsoft-edge-stable", // Chrome/Chromium 可执行文件路径
     "args": ["--disable-gpu"], // 额外的 Chrome 启动参数
     "userDataDir": "~/.stagehand/local_browser_data", // 浏览器用户数据目录路径
     "viewport": {
@@ -34,7 +34,7 @@
 
   // AI/LLM 配置
 //   "model": {
-//     "name": "openai/gpt-4o", // 使用的 AI 模型名称
+//     "name": "openai/gpt-4o", // 使用的 AI 模型名称 "openai", "anthropic", etc
 //     "apiKey": "YOUR_OPENAI_API_KEY", // 模型提供商的 API 密钥（可选，优先级高于环境变量）
 //     "baseUrl": "https://api.openai.com/v1" // 自定义 API 端点基础 URL（可选）
 //   },
