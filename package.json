@@ -16,7 +16,9 @@
     "@browserbasehq/stagehand": "^3.0.1",
     "dotenv": "^17.2.3",
     "fastmcp": "^3.22.0",
-    "zod": "^4.1.12"
+    "openai": "^6.8.1",
+    "zod": "3.25.76",
+    "zod-to-json-schema": "^3.23.5"
   },
   "devDependencies": {
     "vitest": "^2.1.3"

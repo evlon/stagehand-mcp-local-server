@@ -64,7 +64,7 @@ MCP_PORT=3334 pnpm exec node src/index.mjs
       "model": {
         "name": "openai/gpt-4o",
         "apiKey": "YOUR_OPENAI_API_KEY",
-        "baseUrl": "https://api.openai.com/v1"
+        "baseURL": "https://api.openai.com/v1"
       },
       // 缓存目录
       "cacheDir": "~/.stagehand/cache"
