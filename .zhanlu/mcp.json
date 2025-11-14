@@ -1,0 +1,5 @@
+{"mcpServers":{
+    "stagehand":{
+        "URL": "http://localhost:3333/sse"
+    }
+}}
