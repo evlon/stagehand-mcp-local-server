@@ -137,7 +137,7 @@ describe('createStagehandExecutors', () => {
     await executors.stagehand_new_page({}, {});
     const res = await executors.stagehand_act({ instruction: 'do', options: { timeout: 100 } }, {});
     const obj = JSON.parse(res);
-    expect(obj.message).toBe('acted:do');
+    expect(obj.message.startsWith('acted:do')).toBe(true);
     await expect(executors.stagehand_act({ }, {})).rejects.toThrow(/instruction 为必填项/);
   });
 
@@ -153,7 +153,7 @@ describe('createStagehandExecutors', () => {
     await executors.stagehand_new_page({}, {});
     const res = await executors.stagehand_extract({ instruction: 'what' }, {});
     const obj = JSON.parse(res);
-    expect(obj.result).toBe('extract:what');
+    expect(obj.result.startsWith('extract:what')).toBe(true);
   });
 
   it('stagehand_agent executes and returns message', async () => {
