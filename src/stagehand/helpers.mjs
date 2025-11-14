@@ -1,6 +1,6 @@
 import { Stagehand } from '@browserbasehq/stagehand';
 import { UserError } from 'fastmcp';
-
+import { DeepseekAIClient } from './deepseek-safe-client.mjs';
 // 管理每个 MCP 会话的 Stagehand 实例与活动页面索引
 export function createSessionManager(stagehandConfig) {
   const sessions = new Map(); // sessionId -> { sh: Stagehand, activePageIndex: number }
@@ -9,11 +9,34 @@ export function createSessionManager(stagehandConfig) {
     const sessionId = context?.sessionId || 'default';
     let session = sessions.get(sessionId);
     if (!session) {
-      console.log(`Creating new Stagehand session for ID: ${sessionId},`);
-      const sh = new Stagehand(stagehandConfig);
+  
+
+      const modelName = stagehandConfig.model.modelName;
+      let sh = undefined;
+      if (modelName.indexOf("deepseek/") == -1) {
+        sh = new Stagehand(stagehandConfig);
+      }
+      else {
+        sh = new Stagehand({
+          ...stagehandConfig,
+        
+          llmClient: new DeepseekAIClient({
+            modelName: modelName,
+            logger: stagehandConfig.logger || function(msg){console.log(msg.category, msg.message, msg.level, msg.auxiliary)},
+            clientOptions: {
+              apiKey: process.env.DEEPSEEK_API_KEY || '',
+              baseURL: stagehandConfig.model.baseURL
+            }
+          }),
+        });
+      }
+    
+
+
       await sh.init();
       session = { sh, activePageIndex: 0 };
       sessions.set(sessionId, session);
+      console.log(`Creating new Stagehand session for ID: ${sessionId},`);
     }
     return session;
   }

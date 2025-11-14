@@ -36,7 +36,7 @@
 //   "model": {
 //     "name": "openai/gpt-4o", // 使用的 AI 模型名称 "openai", "anthropic", etc
 //     "apiKey": "YOUR_OPENAI_API_KEY", // 模型提供商的 API 密钥（可选，优先级高于环境变量）
-//     "baseUrl": "https://api.openai.com/v1" // 自定义 API 端点基础 URL（可选）
+//     "baseURL": "https://api.openai.com/v1" // 自定义 API 端点基础 URL（可选）
 //   },
 //   "llmClient": null, // 自定义 LLM 客户端实现（可选）
 //   "systemPrompt": "You are a helpful assistant.", // 自定义系统提示，用于指导 AI 行为

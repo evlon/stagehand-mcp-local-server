@@ -66,7 +66,7 @@ function applyEnvOverrides(base) {
     }
     if (envModelName) modelObj.modelName = envModelName;
     if (envModelApiKey) modelObj.apiKey = envModelApiKey;
-    if (envModelBaseUrl) modelObj.baseUrl = envModelBaseUrl;
+    if (envModelBaseUrl) modelObj.baseURL = envModelBaseUrl;
     next.model = modelObj;
   }
 
