@@ -20,6 +20,9 @@ importers:
       openai:
         specifier: ^6.8.1
         version: 6.8.1(ws@8.18.3)(zod@3.25.76)
+      openai-zod-to-json-schema:
+        specifier: ^1.1.2
+        version: 1.1.2(zod@3.25.76)
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -1353,6 +1356,12 @@ packages:
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
+
+  openai-zod-to-json-schema@1.1.2:
+    resolution: {integrity: sha512-c23mG4XutId7WAQmmB/TRMF7sY1Y7Z78bEqJUpgAzBXGxlGAWU56a0eqoGVqPCqjOpSuHFC2uT2WMHn6/molsg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.23.8
 
   openai@4.104.0:
     resolution: {integrity: sha512-p99EFNsA/yX6UhVO93f5kJsDRLAg+CTA2RBqdHK4RtK8u5IJw32Hyb2dTGKbnnFmnuoBv5r7Z2CURI9sGZpSuA==}
@@ -3361,6 +3370,10 @@ snapshots:
   once@1.4.0:
     dependencies:
       wrappy: 1.0.2
+
+  openai-zod-to-json-schema@1.1.2(zod@3.25.76):
+    dependencies:
+      zod: 3.25.76
 
   openai@4.104.0(ws@8.18.3)(zod@3.25.76):
     dependencies:
