@@ -8,6 +8,9 @@ const DEFAULTS = {
   verbose: 2,
   model: 'openai/gpt-4.1-mini',
   cacheDir: './stagehand_cache',
+  enableModelOverride: false,
+  enableMultiPage: false,
+  enableJsonHint: false,
 };
 
 function cleanStr(value) {
@@ -69,6 +72,20 @@ function applyEnvOverrides(base) {
 
   const envCacheDir = process.env.STAGEHAND_CACHE_DIR;
   if (typeof envCacheDir === 'string' && envCacheDir.length) next.cacheDir = expandPath(envCacheDir);
+
+  // Feature flags: prefer environment variables; default disabled for ease-of-use and cost-saving
+  const toBool = (v) => {
+    const s = cleanStr(v);
+    if (typeof s !== 'string') return undefined;
+    const t = s.toLowerCase();
+    return ['1','true','yes','on'].includes(t) ? true : ['0','false','no','off'].includes(t) ? false : undefined;
+  };
+  const envEnableModelOverride = toBool(process.env.STAGEHAND_ENABLE_MODEL_OVERRIDE);
+  const envEnableMultiPage = toBool(process.env.STAGEHAND_ENABLE_MULTI_PAGE);
+  const envEnableJsonHint = toBool(process.env.STAGEHAND_ENABLE_JSON_HINT);
+  if (typeof envEnableModelOverride === 'boolean') next.enableModelOverride = envEnableModelOverride;
+  if (typeof envEnableMultiPage === 'boolean') next.enableMultiPage = envEnableMultiPage;
+  if (typeof envEnableJsonHint === 'boolean') next.enableJsonHint = envEnableJsonHint;
   return next;
 }
 

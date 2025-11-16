@@ -6,7 +6,8 @@
   "main": "src/index.mjs",
   "scripts": {
     "test": "vitest",
-    "start": "node src/index.mjs"
+    "start": "node src/index.mjs",
+    "cli:test": "node scripts/mcp-cli-test.mjs"
   },
   "keywords": [],
   "author": "",

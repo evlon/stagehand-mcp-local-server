@@ -1,7 +1,11 @@
 import { UserError } from 'fastmcp';
+import config from '../config/config.mjs';
 
 export function createStagehandExecutors({ getSession, safeGetPage, generatePlaywrightScript, asset }) {
   const { ensureAssetServer, ensureDirs, ASSET_PORT, SCREEN_DIR } = asset;
+  const { STAGEHAND_CONFIG } = config;
+  const ENABLE_MODEL_OVERRIDE = !!(process.env.STAGEHAND_ENABLE_MODEL_OVERRIDE ?? STAGEHAND_CONFIG?.enableModelOverride);
+  const ENABLE_MULTI_PAGE = !!(process.env.STAGEHAND_ENABLE_MULTI_PAGE ?? STAGEHAND_CONFIG?.enableMultiPage);
 
   return {
     stagehand_new_page: async (args, context) => {
@@ -35,7 +39,8 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
     stagehand_goto: async (args, context) => {
       const { url, pageIndex } = args || {};
       const session = await getSession(context);
-      const got = await safeGetPage(session, pageIndex, { allowCreate: true });
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex, { allowCreate: true });
       if (!got) throw new UserError('无法获取页面。');
       const { page, idx } = got;
       const sanitizedUrl = typeof url === 'string' ? url.replace(/`/g, '').trim() : String(url);
@@ -48,10 +53,11 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       const { pageIndex } = args || {};
       const session = await getSession(context);
       const pages = session.sh.context.pages();
-      if (typeof pageIndex === 'number' && !pages[pageIndex]) {
+      if (ENABLE_MULTI_PAGE && typeof pageIndex === 'number' && !pages[pageIndex]) {
         throw new UserError(`Invalid pageIndex: ${pageIndex}`);
       }
-      const got = await safeGetPage(session, pageIndex);
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex);
       if (!got) {
         return JSON.stringify({ message: 'No active page to close', remaining: pages.length, activeIndex: session.activePageIndex });
       }
@@ -66,10 +72,11 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       const { pageIndex, fullPage, type = 'png', quality, clip, returnMode = 'url' } = args || {};
       const session = await getSession(context);
       const pages = session.sh.context.pages();
-      if (typeof pageIndex === 'number' && !pages[pageIndex]) {
+      if (ENABLE_MULTI_PAGE && typeof pageIndex === 'number' && !pages[pageIndex]) {
         throw new UserError(`Invalid pageIndex: ${pageIndex}`);
       }
-      const got = await safeGetPage(session, pageIndex);
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex);
       if (!got) {
         throw new UserError('No active page to screenshot. 请先使用 stagehand_new_page 或 stagehand_goto 打开页面。');
       }
@@ -96,7 +103,8 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
         throw new UserError('instruction 为必填项且必须为字符串');
       }
       const session = await getSession(context);
-      const got = await safeGetPage(session, pageIndex);
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex);
       if (!got) {
         throw new UserError('No active page. 请先使用 stagehand_new_page 或 stagehand_goto 打开页面。');
       }
@@ -105,30 +113,45 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       if (options && typeof options === 'object') {
         if (typeof options.timeout === 'number') execOptions.timeout = options.timeout;
         if (options.variables && typeof options.variables === 'object') execOptions.variables = options.variables;
-        if (typeof options.model !== 'undefined') execOptions.model = options.model;
+        if (ENABLE_MODEL_OVERRIDE && typeof options.model !== 'undefined') execOptions.model = options.model;
       }
       if (action && typeof action === 'object') {
         execOptions.action = action;
       }
-      const result = await session.sh.act(instruction, execOptions);
+      // 默认总是追加 “JSON” 提示，避免结构化输出要求导致的失败
+      const rawInstruction = typeof instruction === 'string' ? instruction : '';
+      const instructionForAct = /json/i.test(rawInstruction)
+        ? rawInstruction
+        : `${rawInstruction}\n请以 JSON 格式输出单个动作对象（至少包含 type 与 selector，必要时包含 value、key 或 scroll 等字段）。`;
+      const result = await session.sh.act(instructionForAct, execOptions);
       return JSON.stringify(result ?? { success: true, message: 'Action executed' });
     },
 
     stagehand_observe: async (args, context) => {
-      const { instruction, options = {}, pageIndex } = args || {};
+      const { instruction, options = {}, selector, timeout, pageIndex } = args || {};
       const session = await getSession(context);
-      const got = await safeGetPage(session, pageIndex);
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex);
       if (!got) {
         throw new UserError('No active page. 请先使用 stagehand_new_page 或 stagehand_goto 打开页面。');
       }
       const { page } = got;
       const execOptions = { page };
+      // 新形态：顶层 selector/timeout
+      if (typeof selector === 'string') execOptions.selector = selector;
+      if (typeof timeout === 'number') execOptions.timeout = timeout;
+      // 兼容旧形态：options 对象
       if (options && typeof options === 'object') {
         if (typeof options.selector === 'string') execOptions.selector = options.selector;
         if (typeof options.timeout === 'number') execOptions.timeout = options.timeout;
-        if (typeof options.model !== 'undefined') execOptions.model = options.model;
+        if (ENABLE_MODEL_OVERRIDE && typeof options.model !== 'undefined') execOptions.model = options.model;
       }
-      const actions = await session.sh.observe(instruction || '', execOptions);
+      // 默认总是追加 “JSON” 提示
+      const rawInstruction = typeof instruction === 'string' ? instruction : '';
+      const instructionForObserve = /json/i.test(rawInstruction)
+        ? rawInstruction
+        : `${rawInstruction}\n请以 JSON 格式返回候选动作（包含必要字段，如 selector、type、value 等）。`;
+      const actions = await session.sh.observe(instructionForObserve, execOptions);
       return JSON.stringify(actions);
     },
 
@@ -138,7 +161,8 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
         throw new UserError('instruction 为必填项且必须为字符串');
       }
       const session = await getSession(context);
-      const got = await safeGetPage(session, pageIndex);
+      const effectiveIndex = ENABLE_MULTI_PAGE ? pageIndex : undefined;
+      const got = await safeGetPage(session, effectiveIndex);
       if (!got) {
         throw new UserError('No active page. 请先使用 stagehand_new_page 或 stagehand_goto 打开页面。');
       }
@@ -146,9 +170,14 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       const options = { page };
       if (typeof selector === 'string') options.selector = selector;
       if (typeof timeout === 'number') options.timeout = timeout;
-      if (typeof model !== 'undefined') options.model = model;
+      if (ENABLE_MODEL_OVERRIDE && typeof model !== 'undefined') options.model = model;
       if (typeof schema !== 'undefined') options.schema = schema;
-      const result = await session.sh.extract(instruction, options);
+      // 默认总是追加 “JSON” 提示（即便 extract 多数场景已有 schema）
+      const rawInstruction = typeof instruction === 'string' ? instruction : '';
+      const instructionForExtract = /json/i.test(rawInstruction)
+        ? rawInstruction
+        : `${rawInstruction}\n请以 JSON 格式返回与 schema 对齐的数据对象。`;
+      const result = await session.sh.extract(instructionForExtract, options);
       return JSON.stringify(result);
     },
 
@@ -157,8 +186,8 @@ export function createStagehandExecutors({ getSession, safeGetPage, generatePlay
       const session = await getSession(context);
       const agentOptions = {};
       if (typeof cua === 'boolean') agentOptions.cua = cua;
-      if (typeof model !== 'undefined') agentOptions.model = model;
-      if (typeof executionModel !== 'undefined') agentOptions.executionModel = executionModel;
+      if (ENABLE_MODEL_OVERRIDE && typeof model !== 'undefined') agentOptions.model = model;
+      if (ENABLE_MODEL_OVERRIDE && typeof executionModel !== 'undefined') agentOptions.executionModel = executionModel;
       if (typeof systemPrompt === 'string') agentOptions.systemPrompt = systemPrompt;
       if (Array.isArray(integrations)) agentOptions.integrations = integrations;
       const agent = session.sh.agent(agentOptions);
